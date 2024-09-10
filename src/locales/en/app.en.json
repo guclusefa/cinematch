@@ -1,0 +1,9 @@
+{
+  "welcome": "Welcome {name}",
+  "routes": {
+    "home": "Home",
+    "about": "About",
+    "login": "Login",
+    "register": "Register"
+  }
+}

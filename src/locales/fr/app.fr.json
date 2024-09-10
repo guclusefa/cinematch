@@ -1,0 +1,9 @@
+{
+  "welcome": "Bienvenu {name}",
+  "routes": {
+    "home": "Accueil",
+    "about": "A propos",
+    "login": "Connexion",
+    "register": "Inscription"
+  }
+}
