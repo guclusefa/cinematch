@@ -31,12 +31,18 @@ const router = createRouter({
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      meta: {
+        requiresNoAuth: true
+      }
     },
     {
       path: '/register',
       name: 'register',
-      component: RegisterView
+      component: RegisterView,
+      meta: {
+        requiresNoAuth: true
+      }
     },
     // MEMBERS
     {
@@ -67,6 +73,14 @@ router.beforeEach((to, from, next) => {
       // Redirect to the login page
       next({ name: 'login' });
       toast.error('Vous devez être connecté pour accéder à cette page');
+    }
+  } else if (to.matched.some((record) => record.meta.requiresNoAuth)) {
+    console.log(authStore.isFullyAuthenticated);
+    if (authStore.isFullyAuthenticated) {
+      next({ name: 'home' });
+      toast.error('Vous êtes déjà connecté');
+    } else {
+      next();
     }
   } else {
     setDocumentTitle(String(to.name));
