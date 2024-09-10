@@ -80,5 +80,13 @@ export const useAuthStore = defineStore({
       localStorage.removeItem('token'); // Remove token from local storage
       localStorage.removeItem('user'); // Remove user from local storage
     }
+  },
+  getters: {
+    isAuthenticated(): boolean {
+      return !!this.token;
+    },
+    isFullyAuthenticated(): boolean {
+      return !!this.token && !!this.user;
+    }
   }
 });
