@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-import AboutView from '../views/AboutView.vue';
-import HomeView from '../views/HomeView.vue';
+import AboutView from '@/views/AboutView.vue';
+import HomeView from '@/views/HomeView.vue';
 
-import LoginView from '../views/auth/LoginView.vue';
-import RegisterView from '../views/auth/RegisterView.vue';
+import LoginView from '@/views/auth/LoginView.vue';
+import RegisterView from '@/views/auth/RegisterView.vue';
 
-import MembersView from '../views/members/MembersView.vue';
-import MemberView from '../views/members/MemberView.vue';
+import MembersView from '@/views/members/MembersView.vue';
+import MemberView from '@/views/members/MemberView.vue';
 
 import { useAuthStore } from '@/stores/auth';
 import { setDocumentTitle } from '@/utils/document';
@@ -60,7 +60,13 @@ const router = createRouter({
       meta: {
         requiresAuth: true
       }
-    }
+    },
+    // MOVIES
+    {
+      path: '/movies/:id',
+      name: 'movie',
+      component: () => import('@/views/movies/MovieView.vue'),
+    },
   ]
 });
 

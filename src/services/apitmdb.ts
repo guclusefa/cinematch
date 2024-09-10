@@ -4,6 +4,9 @@ const apitmdb = axios.create({
   baseURL: import.meta.env.VITE_TMDB_API_URL,
   headers: {
     'Content-Type': 'application/json'
+  },
+  params: {
+    language: 'fr-FR'
   }
 });
 
@@ -24,6 +27,15 @@ export const getPopularMovies = async (page = 1) => {
       params: { page }
     });
     return response.data.results;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getMovieDetails = async (id: string | number) => {
+  try {
+    const response = await apitmdb.get(`/movie/${id}`);
+    return response.data;
   } catch (error) {
     return Promise.reject(error);
   }

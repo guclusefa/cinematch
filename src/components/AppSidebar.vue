@@ -41,7 +41,7 @@ const navLinks = [
     label: 'Membres',
     icon: UsersIcon,
     iconSolid: UsersIconSolid,
-    needsAuth: false
+    needsAuth: true
   }
 ];
 
