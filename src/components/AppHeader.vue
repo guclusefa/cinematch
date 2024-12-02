@@ -11,15 +11,13 @@ import IconElement from './elements/IconElement.vue';
 import InputElement from './elements/InputElement.vue';
 import WrapperElement from './elements/WrapperElement.vue';
 import api from '@/services/api';
+import { getUser } from '@/utils/auth';
 
 const useAuth = useAuthStore();
 
 const router = useRouter();
 
-let user: any = null;
-if (localStorage.getItem('user') !== null) {
-  user = JSON.parse(localStorage.getItem('user') as string);
-}
+const user = getUser();
 
 function logout() {
   api.logoutUser();
