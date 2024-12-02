@@ -49,7 +49,8 @@ const handleSubmit = async () => {
 
     // Redirect to home after successful registration
     router.push({ name: 'home' }).then(() => {
-      window.location.reload();
+      toast.success('Inscription réussie, vérifiez votre boîte mail pour activer votre compte');
+      // window.location.reload();
     });
   } catch (error) {
     toast.error('Cette adresse email ou nom d\'utilisateur est déjà utilisée');
