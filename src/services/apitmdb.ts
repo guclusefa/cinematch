@@ -32,6 +32,17 @@ export const getPopularMovies = async (page = 1) => {
   }
 };
 
+export const searchMovies = async (query: string, page = 1) => {
+  try {
+    const response = await apitmdb.get(`/search/movie`, {
+      params: { query, page },
+    });
+    return response.data.results;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 export const getMovieDetails = async (id: string | number) => {
   try {
     const response = await apitmdb.get(`/movie/${id}`);

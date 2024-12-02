@@ -29,10 +29,8 @@ function logout() {
 </script>
 
 <template>
-  <header
-    id="topbar"
-    class="fixed top-0 left-0 right-0 h-16 z-[100] bg-white dark:bg-black-lightend shadow dark:shadow-[0_0_10px_#000000]"
-  >
+  <header id="topbar"
+    class="fixed top-0 left-0 right-0 h-16 z-[100] bg-white dark:bg-black-lightend shadow dark:shadow-[0_0_10px_#000000]">
     <WrapperElement>
       <nav class="flex justify-between items-center">
         <div class="flex items-center gap-2 sm:gap-0">
@@ -51,10 +49,12 @@ function logout() {
               </IconElement>
             </div>
             <div class="relative hidden md:flex items-center">
-              <InputElement type="search" id="topbar-search" name="q" placeholder="Rechercher..." />
-              <div class="flex absolute inset-y-0 right-2 items-center pl-3 pointer-events-none">
-                <MagnifyingGlassIcon class="w-5 h-5" />
-              </div>
+              <form action="/search" method="get" id="topbar-search" class="relative">
+                <InputElement type="search" id="topbar-search" name="q" placeholder="Rechercher..." />
+                  <div class="flex absolute inset-y-0 right-2 items-center pl-3 pointer-events-none">
+                    <MagnifyingGlassIcon class="w-5 h-5" />
+                  </div>
+              </form>
             </div>
           </div>
         </div>
@@ -68,7 +68,8 @@ function logout() {
             <template v-if="useAuth.user && user._id">
               <IconElement class="relative">
                 <BellIcon class="w-6 h-6" />
-                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs font-semibold flex items-center justify-center rounded-full">3</span>
+                <span
+                  class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs font-semibold flex items-center justify-center rounded-full">3</span>
               </IconElement>
               <div class="flex items-center gap-2">
                 <span class="text-sm font-semibold">{{ user.email }}</span>
