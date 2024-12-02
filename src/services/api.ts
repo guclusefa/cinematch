@@ -21,6 +21,22 @@ api.interceptors.request.use(
   }
 );
 
+export const loginUser = async (userData) => {
+  try {
+    const response = await api.post('/login', userData);
+    localStorage.setItem('user', JSON.stringify(response.data
+    ));
+
+    const { user } = response.data;
+    const leUser = JSON.stringify(user[0]);
+    localStorage.setItem('user', leUser);
+
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 export const createUser = async (userData) => {
   try {
     const response = await api.post('/user', userData);
@@ -30,7 +46,20 @@ export const createUser = async (userData) => {
   }
 };
 
+export const getLoggedInUser = async () => {
+  if (!localStorage.getItem('user')) {
+    return null;
+  }
+  return JSON.parse(localStorage.getItem('user'));
+};
+
+export const logoutUser = () => {
+  localStorage.removeItem('user');
+};
+
 export default {
   createUser,
-  // Other methods if needed
+  loginUser,
+  getLoggedInUser,
+  logoutUser
 };

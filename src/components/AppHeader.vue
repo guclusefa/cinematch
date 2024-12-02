@@ -10,20 +10,21 @@ import ButtonElement from './elements/ButtonElement.vue';
 import IconElement from './elements/IconElement.vue';
 import InputElement from './elements/InputElement.vue';
 import WrapperElement from './elements/WrapperElement.vue';
+import api from '@/services/api';
 
 const useAuth = useAuthStore();
 
 const router = useRouter();
 
 let user: any = null;
-if (useAuth.user) {
-  user = useAuth.user;
+if (localStorage.getItem('user') !== null) {
+  user = JSON.parse(localStorage.getItem('user') as string);
 }
 
 function logout() {
-  useAuth.logout();
+  api.logoutUser();
   router.push({ name: 'home' }).then(() => {
-    toast.success('Vous êtes déconnecté avec succès');
+    window.location.reload();
   });
 }
 </script>
@@ -51,9 +52,9 @@ function logout() {
             <div class="relative hidden md:flex items-center">
               <form action="/search" method="get" id="topbar-search" class="relative">
                 <InputElement type="search" id="topbar-search" name="q" placeholder="Rechercher..." />
-                  <div class="flex absolute inset-y-0 right-2 items-center pl-3 pointer-events-none">
-                    <MagnifyingGlassIcon class="w-5 h-5" />
-                  </div>
+                <div class="flex absolute inset-y-0 right-2 items-center pl-3 pointer-events-none">
+                  <MagnifyingGlassIcon class="w-5 h-5" />
+                </div>
               </form>
             </div>
           </div>
@@ -65,14 +66,14 @@ function logout() {
             </IconElement>
           </div>
           <div class="hidden xxxs:flex items-center gap-3 sm:gap-2">
-            <template v-if="useAuth.user && user._id">
+            <template v-if="user !== null">
               <IconElement class="relative">
                 <BellIcon class="w-6 h-6" />
                 <span
                   class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs font-semibold flex items-center justify-center rounded-full">3</span>
               </IconElement>
               <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold">{{ user.email }}</span>
+                <span class="text-sm font-semibold">{{ user.pseudo }}</span>
                 <ButtonElement @click="logout" title="Déconnexion">Déconnexion</ButtonElement>
               </div>
             </template>

@@ -8,6 +8,7 @@ import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import ButtonElement from '../elements/ButtonElement.vue';
 import SpinnerElement from '../elements/SpinnerElement.vue';
+import api from '@/services/api';
 
 const router = useRouter();
 
@@ -25,12 +26,16 @@ const handleSubmit = async () => {
   }
   try {
     loading.value = true;
-    await useAuthStore().login({ username: user.value.username, password: user.value.password });
+    const response = await api.loginUser({
+      pseudo: user.value.username,
+      password: user.value.password
+    });
     router.push({ name: 'home' }).then(() => {
       window.location.reload();
     });
   } catch (error) {
     toast.error("Nom d'utilisateur ou mot de passe incorrect");
+    console.error(error);
   } finally {
     loading.value = false;
   }
@@ -41,7 +46,7 @@ const handleSubmit = async () => {
   <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
     <InputgroupElement>
       <template #label>
-        <LabelElement>Nom d'utilisateur ou email</LabelElement>
+        <LabelElement>Nom d'utilisateur</LabelElement>
       </template>
       <template #input>
         <InputElement :id="'nom'" v-model="user.username" />
