@@ -17,30 +17,9 @@
       </p>
       <p class="text-gray-700 dark:text-gray-300 text-sm line-clamp-3 flex-grow">{{ props.movie.overview }}</p>
 
+      <br>
       <!-- Watched and Liked buttons -->
-      <div class="flex items-center justify-start gap-2 mt-4">
-        <IconElement @click.stop="toggleWatched" :class="[
-          watched ? 'text-green-500 dark:text-green-400' : 'text-gray-600 dark:text-gray-400',
-        ]" :title="watched ? 'Je n\'ai pas vu' : 'Je l\'ai vu'">
-          <template v-if="watched">
-            <EyeIconSolid class="w-5 h-5" />
-          </template>
-          <template v-else>
-            <EyeIcon class="w-5 h-5" />
-          </template>
-        </IconElement>
-
-        <IconElement @click.stop="toggleLiked" :class="[
-          liked ? 'text-red-500 dark:text-red-400' : 'text-gray-600 dark:text-gray-400',
-        ]" :title="liked ? 'Je n\'aime plus' : 'J\'aime'">
-          <template v-if="liked">
-            <HeartIconSolid class="w-5 h-5" />
-          </template>
-          <template v-else>
-            <HeartIcon class="w-5 h-5" />
-          </template>
-        </IconElement>
-      </div>
+      <MovieActions :movieId="props.movie.id" />
     </div>
   </div>
 </template>
@@ -51,6 +30,7 @@ import { EyeIcon as EyeIconSolid, HeartIcon as HeartIconSolid } from '@heroicons
 import { defineProps, ref } from 'vue';
 import IconElement from '../elements/IconElement.vue';
 import RatingStarsElement from '../elements/RatingStarsElement.vue';
+import MovieActions from './MovieActions.vue';
 
 const props = defineProps({
   movie: {

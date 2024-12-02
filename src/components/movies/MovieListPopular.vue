@@ -31,7 +31,7 @@ onMounted(async () => {
 
 <template>
   <div>
-    <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+    <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
       <li v-for="movie in movies" :key="movie.id">
         <MovieCard :movie="movie" />
       </li>
