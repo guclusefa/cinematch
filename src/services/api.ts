@@ -8,7 +8,6 @@ const api = axios.create({
   }
 });
 
-
 api.interceptors.request.use(
   config => {
     const authStore = useAuthStore();
@@ -22,4 +21,16 @@ api.interceptors.request.use(
   }
 );
 
-export default api;
+export const createUser = async (userData) => {
+  try {
+    const response = await api.post('/user', userData);
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export default {
+  createUser,
+  // Other methods if needed
+};

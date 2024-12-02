@@ -2,12 +2,12 @@
 import InputElement from '@/components/elements/InputElement.vue';
 import InputgroupElement from '@/components/elements/InputgroupElement.vue';
 import LabelElement from '@/components/elements/LabelElement.vue';
-import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { toast } from 'vue3-toastify';
 import ButtonElement from '../elements/ButtonElement.vue';
 import SpinnerElement from '../elements/SpinnerElement.vue';
+import api from '@/services/api';  // Import the api where createUser is defined
 
 const router = useRouter();
 
@@ -23,23 +23,31 @@ const user = ref({
 });
 
 const handleSubmit = async () => {
+  // Validate user inputs
   if (!user.value.username || !user.value.password || !user.value.passwordConfirmation || !user.value.firstName || !user.value.lastName) {
     toast.error('Veuillez remplir les champs obligatoires');
     return;
   }
+
+  // Validate passwords match
   if (user.value.password !== user.value.passwordConfirmation) {
     toast.error('Les mots de passe ne correspondent pas');
     return;
   }
+
   try {
     loading.value = true;
-    await useAuthStore().register({
-      username: user.value.username,
-      password: user.value.password,
-      firstName: user.value.firstName,
-      lastName: user.value.lastName,
-      email: user.value.username
+
+    // Create user by calling the API function
+    await api.createUser({
+      email: user.value.email,
+      pseudo: user.value.username,
+      nom: user.value.lastName,
+      prenom: user.value.firstName,
+      password: user.value.password
     });
+
+    // Redirect to home after successful registration
     router.push({ name: 'home' }).then(() => {
       window.location.reload();
     });
@@ -50,6 +58,7 @@ const handleSubmit = async () => {
   }
 };
 </script>
+
 
 <template>
   <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
@@ -105,11 +114,7 @@ const handleSubmit = async () => {
           <LabelElement>Confirmation du mot de passe</LabelElement>
         </template>
         <template #input>
-          <InputElement
-            type="password"
-            :id="'passwordConfirmation'"
-            v-model="user.passwordConfirmation"
-          />
+          <InputElement type="password" :id="'passwordConfirmation'" v-model="user.passwordConfirmation" />
         </template>
       </InputgroupElement>
     </div>
