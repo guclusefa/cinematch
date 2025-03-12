@@ -10,20 +10,15 @@ import ButtonElement from './elements/ButtonElement.vue';
 import IconElement from './elements/IconElement.vue';
 import InputElement from './elements/InputElement.vue';
 import WrapperElement from './elements/WrapperElement.vue';
-import api from '@/services/api';
-import { getUser } from '@/utils/auth';
+import { storeToRefs } from 'pinia';
 
-const useAuth = useAuthStore();
-
+const authStore = useAuthStore();
+const { user } = storeToRefs(authStore);
 const router = useRouter();
 
-const user = getUser();
-
 function logout() {
-  api.logoutUser();
-  router.push({ name: 'home' }).then(() => {
-    window.location.reload();
-  });
+  authStore.logout();
+  router.push({ name: 'home' });
 }
 </script>
 
@@ -64,14 +59,19 @@ function logout() {
             </IconElement>
           </div>
           <div class="hidden xxxs:flex items-center gap-3 sm:gap-2">
-            <template v-if="user !== null">
+            <template v-if="user">
               <IconElement class="relative">
                 <BellIcon class="w-6 h-6" />
                 <span
                   class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs font-semibold flex items-center justify-center rounded-full">3</span>
               </IconElement>
               <div class="flex items-center gap-2">
-                <span class="text-sm font-semibold">{{ user.pseudo }}</span>
+                <RouterLink 
+                  :to="`/members/${user.id}`"
+                  class="text-sm font-semibold hover:text-primary transition-colors"
+                >
+                  {{ user.pseudo }}
+                </RouterLink>
                 <ButtonElement @click="logout" title="Déconnexion">Déconnexion</ButtonElement>
               </div>
             </template>

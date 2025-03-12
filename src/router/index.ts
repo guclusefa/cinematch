@@ -71,23 +71,25 @@ const router = createRouter({
     {
       path: '/movies/:id',
       name: 'movie',
-      component: () => import('@/views/movies/MovieView.vue'),
-    },
+      component: () => import('@/views/movies/MovieView.vue')
+    }
   ]
 });
 
 router.beforeEach((to, from, next) => {
-  // Check if the route requires authentication
   const authStore = useAuthStore();
+  const token = localStorage.getItem('token');
+
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    // If the user is not authenticated
-    if (!authStore.isFullyAuthenticated) {
-      // Redirect to the login page
+    if (!authStore.isFullyAuthenticated && token) {
+      next();
+    } else if (!authStore.isFullyAuthenticated && !token) {
       next({ name: 'login' });
       toast.error('Vous devez être connecté pour accéder à cette page');
+    } else {
+      next();
     }
   } else if (to.matched.some((record) => record.meta.requiresNoAuth)) {
-    console.log(authStore.isFullyAuthenticated);
     if (authStore.isFullyAuthenticated) {
       next({ name: 'home' });
       toast.error('Vous êtes déjà connecté');

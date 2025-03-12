@@ -1,8 +1,8 @@
-import api from '@/services/api';
-import type { Member } from '@/types/Member';
+import { api } from '@/services/api';
+import type { Member } from '@/types/member';
 import { defineStore } from 'pinia';
 
-const url = '/workers';
+const url = '/user';
 
 export const useMembersStore = defineStore({
   id: 'members',

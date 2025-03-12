@@ -55,9 +55,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps } from 'vue';
+import { ref, defineProps, onMounted } from 'vue';
 import { EyeIcon, HeartIcon, StarIcon, HandThumbDownIcon } from '@heroicons/vue/24/outline';
 import { EyeIcon as EyeIconSolid, HeartIcon as HeartIconSolid, StarIcon as StarIconSolid, HandThumbDownIcon as HandThumbDownIconSolid } from '@heroicons/vue/24/solid';
+import { api } from '@/services/api';
+import { useAuthStore } from '@/stores/auth';
+import { toast } from 'vue3-toastify';
+
+const authStore = useAuthStore();
 
 const props = defineProps({
     movieId: {
@@ -71,21 +76,73 @@ const liked = ref(false);
 const loved = ref(false);
 const disliked = ref(false);
 
-const toggleSeen = () => {
+const fetchRating = async () => {
+    try {
+        const response = await api.get(`/rating/ratings/${authStore.user.id}/${props.movieId}`);
+        if (response.data) {
+            const rating = response.data.rating;
+            liked.value = rating === 1;
+            disliked.value = rating === -1;
+            loved.value = rating === 2;
+            seen.value = true;
+        }
+    } catch (error) {
+        console.error('Error fetching rating:', error);
+    }
+};
+
+const rateMovie = async (rating: number) => {
+    try {
+        await api.post('/rating/ratings', {
+            user_id: authStore.user.id,
+            tmdb_id: props.movieId,
+            rating: rating
+        });
+        toast.success('Note enregistrée !');
+    } catch (error) {
+        console.error('Error rating movie:', error);
+        toast.error('Erreur lors de l\'enregistrement de la note');
+    }
+};
+
+const toggleSeen = async () => {
     seen.value = !seen.value;
+    if (!seen.value) {
+        liked.value = false;
+        disliked.value = false;
+        loved.value = false;
+        await rateMovie(0);
+    }
 };
 
-const toggleLiked = () => {
-    liked.value = !liked.value;
+const toggleLiked = async () => {
+    if (!seen.value) seen.value = true;
+    const newValue = !liked.value;
+    liked.value = newValue;
+    disliked.value = false;
+    loved.value = false;
+    await rateMovie(newValue ? 1 : 0);
 };
 
-const toggleLoved = () => {
-    loved.value = !loved.value;
+const toggleLoved = async () => {
+    if (!seen.value) seen.value = true;
+    const newValue = !loved.value;
+    loved.value = newValue;
+    liked.value = false;
+    disliked.value = false;
+    await rateMovie(newValue ? 2 : 0);
 };
 
-const toggleDisliked = () => {
-    disliked.value = !disliked.value;
+const toggleDisliked = async () => {
+    if (!seen.value) seen.value = true;
+    const newValue = !disliked.value;
+    disliked.value = newValue;
+    liked.value = false;
+    loved.value = false;
+    await rateMovie(newValue ? -1 : 0);
 };
+
+onMounted(fetchRating);
 </script>
 
 <style scoped>

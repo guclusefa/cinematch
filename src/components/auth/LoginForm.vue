@@ -11,31 +11,32 @@ import SpinnerElement from '../elements/SpinnerElement.vue';
 import api from '@/services/api';
 
 const router = useRouter();
-
+const authStore = useAuthStore();
 const loading = ref(false);
 
 const user = ref({
-  username: '',
+  pseudo: '',
   password: ''
 });
 
 const handleSubmit = async () => {
-  if (!user.value.username || !user.value.password) {
-    toast.error("Veuillez remplir votre nom d'utilisateur et votre mot de passe");
+  if (!user.value.pseudo || !user.value.password) {
+    toast.error("Veuillez remplir votre pseudo et votre mot de passe");
     return;
   }
   try {
     loading.value = true;
-    const response = await api.loginUser({
-      pseudo: user.value.username,
+    await authStore.login({
+      username: user.value.pseudo,
       password: user.value.password
     });
-    router.push({ name: 'home' }).then(() => {
-      window.location.reload();
-    });
-  } catch (error) {
-    toast.error("Nom d'utilisateur ou mot de passe incorrect");
-    console.error(error);
+
+    toast.success('Connexion réussie');
+    router.push({ name: 'home' });
+  } catch (error: any) {
+    console.error('Login error:', error);
+    const errorMessage = error.response?.data?.error || "Une erreur est survenue lors de la connexion";
+    toast.error(errorMessage);
   } finally {
     loading.value = false;
   }
@@ -46,10 +47,10 @@ const handleSubmit = async () => {
   <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
     <InputgroupElement>
       <template #label>
-        <LabelElement>Nom d'utilisateur</LabelElement>
+        <LabelElement>Pseudo</LabelElement>
       </template>
       <template #input>
-        <InputElement :id="'nom'" v-model="user.username" />
+        <InputElement :id="'pseudo'" v-model="user.pseudo" placeholder="Entrez votre pseudo" autocomplete="username" />
       </template>
     </InputgroupElement>
     <InputgroupElement>
@@ -57,7 +58,7 @@ const handleSubmit = async () => {
         <LabelElement>Mot de passe</LabelElement>
       </template>
       <template #input>
-        <InputElement type="password" :id="'password'" v-model="user.password" />
+        <InputElement type="password" :id="'password'" v-model="user.password" autocomplete="current-password" />
       </template>
     </InputgroupElement>
     <footer class="flex gap-2">

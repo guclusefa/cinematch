@@ -1,42 +1,71 @@
-import api from '@/services/api';
+import { api } from '@/services/api';
+import { connectSocket, disconnectSocket } from '@/services/socket';
 import { defineStore } from 'pinia';
+
+interface User {
+  id: number;
+  email: string;
+  pseudo: string;
+  nom: string;
+  prenom: string;
+}
+
+interface AuthState {
+  token: string | null;
+  user: User | null;
+}
 
 export const useAuthStore = defineStore({
   id: 'auth',
-  state: () => ({
-    user: JSON.parse('{}'),
-    token: ''
+
+  state: (): AuthState => ({
+    token: localStorage.getItem('token'),
+    user: JSON.parse(localStorage.getItem('user') || 'null')
   }),
+
   actions: {
     async login(credentials: { username: string; password: string }) {
       try {
-        // Request
-        const response = await api.post('/auth/login', credentials);
-        if (response.status < 200 || response.status >= 300) {
-          throw new Error('Invalid response');
-        }
-        // Response
-        const { token } = response.data;
-        this.token = token;
-        localStorage.setItem('token', token); // Save token to local storage
+        const response = await api.post('/user/login', {
+          pseudo: credentials.username,
+          password: credentials.password
+        });
 
-        // Get user
-        await this.getUser();
+        this.token = response.data.token;
+        this.user = response.data.user;
+
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+
+        if (this.user) {
+          connectSocket(this.user.id);
+        }
+
+        return response.data;
       } catch (error) {
-        console.error(error);
+        this.token = null;
+        this.user = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         throw error;
       }
     },
+
     async getUser() {
       try {
-        const response = await api.get('/me');
+        const response = await api.get('/user/me');
         this.user = response.data;
-        localStorage.setItem('user', JSON.stringify(this.user)); // Save user to local storage
+        localStorage.setItem('user', JSON.stringify(response.data));
+        return response.data;
       } catch (error) {
-        console.error(error);
+        this.token = null;
+        this.user = null;
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
         throw error;
       }
     },
+
     async register(credentials: {
       username: string;
       password: string;
@@ -45,23 +74,18 @@ export const useAuthStore = defineStore({
       email: string;
     }) {
       try {
-        // formattage car yanis sait pas coder
         const body = {
-          username: credentials.username,
+          pseudo: credentials.username,
           password: credentials.password,
-          workerData: {
-            firstName: credentials.firstName,
-            lastName: credentials.lastName,
-            email: credentials.email
-          }
+          email: credentials.email,
+          nom: credentials.lastName,
+          prenom: credentials.firstName
         };
 
-        // Request
-        const response = await api.post('/auth/register', body);
+        const response = await api.post('/user', body);
         if (response.status < 200 || response.status >= 300) {
           throw new Error('Invalid response');
         }
-        // Login after registration
 
         const formattedCreditionals = {
           username: credentials.username,
@@ -74,19 +98,20 @@ export const useAuthStore = defineStore({
         throw error;
       }
     },
+
     logout() {
-      this.token = '';
-      this.user = '';
-      localStorage.removeItem('token'); // Remove token from local storage
-      localStorage.removeItem('user'); // Remove user from local storage
+      if (this.user) {
+        disconnectSocket();
+      }
+      this.token = null;
+      this.user = null;
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
   },
+
   getters: {
-    isAuthenticated(): boolean {
-      return !!this.token;
-    },
-    isFullyAuthenticated(): boolean {
-      return !!this.token && !!this.user;
-    }
+    isAuthenticated: (state) => !!state.token,
+    isFullyAuthenticated: (state) => !!state.token && !!state.user
   }
 });

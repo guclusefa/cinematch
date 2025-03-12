@@ -12,6 +12,7 @@ import { useAuthStore } from '../stores/auth';
 import WrapperElement from './elements/WrapperElement.vue';
 import LocaleChooser from './fragments/LocaleChooser.vue';
 import ThemeSwitcher from './fragments/ThemeSwitcher.vue';
+import { storeToRefs } from 'pinia';
 
 function watchEscapeKey() {
   document.addEventListener('keydown', (e) => {
@@ -46,11 +47,7 @@ const navLinks = [
 ];
 
 const useAuth = useAuthStore();
-
-let user: any = null;
-if (useAuth.user) {
-  user = useAuth.user;
-}
+const { user } = storeToRefs(useAuth);
 </script>
 
 <template>

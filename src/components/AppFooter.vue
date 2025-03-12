@@ -11,7 +11,7 @@ import WrapperElement from './elements/WrapperElement.vue';
     <WrapperElement>
       <nav class="flex justify-between items-center">
         <div class="flex items-center gap-3">
-          <div>&copy; 2023 {{ getAppName() }}</div>
+          <div>&copy; 2025 {{ getAppName() }}</div>
         </div>
         <div class="flex items-center gap-3">
           <div>V.{{ getAppVersion() }}</div>

@@ -1,63 +1,88 @@
-import { useAuthStore } from '@/stores/auth';
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status?: number,
+    public data?: any
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+export const api = axios.create({
+  baseURL: 'http://localhost:3000/api',
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
 api.interceptors.request.use(
-  config => {
-    const authStore = useAuthStore();
-    if (authStore.token) {
-      config.headers.Authorization = `Bearer ${authStore.token}`;
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => {
-    return Promise.reject(error);
+  (error) => {
+    return Promise.reject(new ApiError('Request failed', undefined, error));
   }
 );
 
-export const loginUser = async (userData) => {
-  try {
-    const response = await api.post('/login', userData);
-    localStorage.setItem('user', JSON.stringify(response.data
-    ));
-
-    const { user } = response.data;
-    const leUser = JSON.stringify(user[0]);
-    localStorage.setItem('user', leUser);
-
-    return response.data;
-  } catch (error) {
-    return Promise.reject(error);
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const message = error.response?.data?.message || error.response?.data?.error || 'An error occurred';
+    const status = error.response?.status;
+    return Promise.reject(new ApiError(message, status, error.response?.data));
   }
-};
+);
 
-export const createUser = async (userData) => {
+export const createUser = async (userData: any) => {
   try {
     const response = await api.post('/user', userData);
     return response.data;
   } catch (error) {
-    return Promise.reject(error);
+    if (error instanceof ApiError) throw error;
+    throw new ApiError('Failed to create user');
+  }
+};
+
+export const loginUser = async (credentials: { username: string; password: string }) => {
+  try {
+    const response = await api.post('/login', {
+      pseudo: credentials.username,
+      password: credentials.password
+    });
+    const { token, user } = response.data;
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError('Failed to login');
   }
 };
 
 export const getLoggedInUser = async () => {
-  if (!localStorage.getItem('user')) {
-    return null;
+  try {
+    const response = await api.get('/me');
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError('Failed to get logged in user');
   }
-  return JSON.parse(localStorage.getItem('user'));
 };
 
 export const logoutUser = () => {
+  localStorage.removeItem('token');
   localStorage.removeItem('user');
 };
 
 export default {
+  api,
   createUser,
   loginUser,
   getLoggedInUser,
