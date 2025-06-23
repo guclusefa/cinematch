@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 import defaultTheme from 'tailwindcss/defaultTheme';
+import lineClamp from '@tailwindcss/line-clamp';
 
 export default {
   darkMode: 'class',
@@ -41,7 +42,6 @@ export default {
           darker: '#f01919',
           darkest: '#ec0f0f'
         },
-
         primary: {
           lightest: '#fb0e37',
           lighter: '#f5052e',
@@ -62,5 +62,8 @@ export default {
         }
       }
     }
-  }
+  },
+  plugins: [
+    lineClamp
+  ]
 };

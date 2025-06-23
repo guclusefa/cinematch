@@ -44,13 +44,6 @@ const navLinks = [
     icon: FilmIcon,
     iconSolid: FilmIconSolid,
     needsAuth: false
-  },
-  {
-    name: 'members',
-    label: 'Membres',
-    icon: UsersIcon,
-    iconSolid: UsersIconSolid,
-    needsAuth: true
   }
 ];
 
