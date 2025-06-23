@@ -5,8 +5,10 @@ toggleAppSidebar,
 toggleAppSidebarWithTransition,
 toggleAppSidebarWithTransitionOnMobile
 } from '@/utils/app';
-import { HomeIcon, UsersIcon } from '@heroicons/vue/24/outline';
-import { HomeIcon as HomeIconSolid, UsersIcon as UsersIconSolid } from '@heroicons/vue/24/solid';
+import { HomeIcon, UsersIcon, FilmIcon  } from '@heroicons/vue/24/outline';
+import { HomeIcon as HomeIconSolid, UsersIcon as UsersIconSolid, FilmIcon as FilmIconSolid
+
+} from '@heroicons/vue/24/solid';
 import { onMounted } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import WrapperElement from './elements/WrapperElement.vue';
@@ -34,6 +36,13 @@ const navLinks = [
     label: 'Accueil',
     icon: HomeIcon,
     iconSolid: HomeIconSolid,
+    needsAuth: false
+  },
+    {
+    name: 'recommendation',
+    label: 'Recommandation',
+    icon: FilmIcon,
+    iconSolid: FilmIconSolid,
     needsAuth: false
   },
   {
