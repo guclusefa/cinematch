@@ -1,32 +1,39 @@
 <template>
   <div
-    class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow hover:shadow-xl transition duration-300 h-full flex flex-col">
-    
-    <router-link :to="{ name: 'movie', params: { id: props.movie.id } }" class="block">
+    class="bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col h-full"
+  >
+    <router-link
+      :to="{ name: 'movie', params: { id: props.movie.id } }"
+      class="block overflow-hidden rounded-t-xl"
+    >
       <img
         :src="'https://image.tmdb.org/t/p/w500' + props.movie.poster_path"
         :alt="props.movie.title"
-        class="w-full h-72 object-cover transition duration-300 transform hover:scale-105"
+        class="w-full h-72 object-cover transition-transform duration-300 ease-in-out hover:scale-105"
+        loading="lazy"
       />
     </router-link>
 
-    <div class="p-4 flex flex-col flex-grow">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">{{ props.movie.title }}</h2>
-      
-      <p class="text-gray-600 dark:text-gray-400 text-sm">
-        <strong>Date de sortie:</strong> {{ props.movie.release_date }}
-      </p>
-      
-      <p class="text-gray-600 dark:text-gray-400 text-sm mb-2">
-        <strong>Note:</strong> {{ props.movie.vote_average }} / 10
-        <RatingStarsElement :rating="props.movie.vote_average" />
+    <div class="p-5 flex flex-col flex-grow">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 truncate">
+        {{ props.movie.title }}
+      </h2>
+
+      <p class="text-gray-600 dark:text-gray-400 text-sm mb-1 flex items-center gap-1.5">
+        <span title="Date de sortie" aria-label="Date de sortie">📅</span>
+        <span>{{ new Date(props.movie.release_date).toLocaleDateString('fr-FR') }}</span>
       </p>
 
-      <p class="text-gray-700 dark:text-gray-300 text-sm line-clamp-3 flex-grow">
+      <p class="flex items-center gap-3 text-sm mb-3  font-semibold">
+        <RatingStarsElement :rating="props.movie.vote_average" />
+        <span>{{ props.movie.vote_average.toFixed(1) }} / 10</span>
+      </p>
+
+      <p class="text-gray-700 dark:text-gray-300 text-sm line-clamp-3 flex-grow mb-4">
         {{ props.movie.overview }}
       </p>
 
-      <div class="mt-4">
+      <div>
         <MovieActions :movieId="props.movie.id" />
       </div>
     </div>

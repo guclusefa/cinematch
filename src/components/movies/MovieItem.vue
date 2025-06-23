@@ -1,74 +1,85 @@
 <template>
   <div
-    class="shadow-xl hover:shadow-2xl transition duration-300 ease-in-out hover:cursor-pointer border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
-    <div v-if="movie"
-      class="flex flex-col lg:flex-row gap-6 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
-      <!-- Movie Poster -->
-      <img :src="'https://image.tmdb.org/t/p/original' + props.movie.poster_path" :alt="props.movie.title"
-        class="w-full lg:w-1/3 h-auto object-cover rounded-t-lg lg:rounded-l-lg" />
+    class="max-w-5xl mx-auto shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out cursor-pointer border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-white dark:bg-gray-900"
+  >
+    <div v-if="movie" class="flex flex-col lg:flex-row gap-8 p-8">
+      <!-- Affiche du film -->
+      <img
+        :src="'https://image.tmdb.org/t/p/w500' + props.movie.poster_path"
+        :alt="props.movie.title"
+        class="rounded-xl flex-shrink-0 w-full max-w-xs mx-auto lg:mx-0 lg:w-auto object-cover shadow-lg"
+      />
 
-      <!-- Movie Details -->
-      <div class="flex-grow p-6">
-        <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-gray-100">{{ props.movie.title }}</h1>
+      <!-- Détails du film -->
+      <div class="flex-grow flex flex-col">
+        <h1
+          class="text-4xl font-extrabold mb-5 text-gray-900 dark:text-gray-100 tracking-tight"
+        >
+          {{ props.movie.title }}
+        </h1>
 
-        <!-- Release Date, Rating, and Other Information -->
-        <div class="text-gray-700 dark:text-gray-300 text-lg space-y-2 mb-6">
-          <p><strong class="font-semibold">Release Date:</strong> {{ props.movie.release_date }}</p>
-          <p><strong class="font-semibold">Rating:</strong>
-            <RatingStarsElement :rating="props.movie.vote_average" /> {{ props.movie.vote_average }} / 10
+        <div class="flex flex-wrap gap-8 text-gray-700 dark:text-gray-300 text-base mb-8">
+          <p><strong>Date de sortie :</strong> {{ new Date(props.movie.release_date).toLocaleDateString('fr-FR') }}</p>
+          <p class="flex items-center gap-3">
+            <strong>Note :</strong>
+            <RatingStarsElement :rating="props.movie.vote_average" />
+            <span class="font-semibold">{{ props.movie.vote_average }} / 10</span>
           </p>
-          <p><strong class="font-semibold">Runtime:</strong> {{ props.movie.runtime }} minutes</p>
-          <p>
-            <strong class="font-semibold">Genres: </strong>
-            <span v-for="(genre, index) in props.movie.genres" :key="index"
-              class="inline-block bg-gray-200 dark:bg-gray-700 rounded-full px-3 py-1 text-sm mr-1">
+          <p><strong>Durée :</strong> {{ props.movie.runtime }} min</p>
+        </div>
+
+        <!-- Genres -->
+        <div class="mb-8">
+          <strong class="text-lg text-gray-800 dark:text-gray-200">Genres :</strong>
+          <div class="mt-3 flex flex-wrap gap-3">
+            <span
+              v-for="genre in props.movie.genres"
+              :key="genre.id"
+              class="bg-red-100 dark:bg-red-700 text-red-800 dark:text-red-100 rounded-full px-4 py-1.5 text-sm font-semibold tracking-wide shadow-sm"
+            >
               {{ genre.name }}
             </span>
-          </p>
+          </div>
         </div>
 
-        <!-- Movie Overview -->
-        <div class="mb-6">
-          <h2 class="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Overview</h2>
-          <p class="text-gray-600 dark:text-gray-300">{{ props.movie.overview }}</p>
-        </div>
+        <!-- Synopsis -->
+        <section class="mb-10">
+          <h2 class="text-2xl font-semibold mb-3 text-gray-900 dark:text-gray-100">Synopsis</h2>
+          <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-justify">{{ props.movie.overview }}</p>
+        </section>
 
-        <!-- Additional Information (Optional Fields) -->
-        <div class="space-y-4">
-          <div v-if="props.movie.tagline">
-            <h2 class="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Tagline</h2>
-            <p class="italic text-gray-600 dark:text-gray-400">{{ props.movie.tagline }}</p>
+        <!-- Informations complémentaires -->
+        <section class="space-y-8 text-gray-700 dark:text-gray-300">
+          <div v-if="props.movie.tagline" class="border-l-4 border-red-500 pl-4">
+            <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Phrase d'accroche</h3>
+            <p class="italic text-gray-600 dark:text-gray-400">« {{ props.movie.tagline }} »</p>
           </div>
 
-          <div v-if="props.movie.production_companies.length">
-            <h2 class="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Production Companies</h2>
-            <ul class="list-disc pl-5 text-gray-600 dark:text-gray-400">
+          <div v-if="props.movie.production_companies.length" class="border-l-4 border-red-500 pl-4">
+            <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Sociétés de production</h3>
+            <ul class="list-disc pl-6 space-y-1">
               <li v-for="company in props.movie.production_companies" :key="company.id">
                 {{ company.name }}
               </li>
             </ul>
           </div>
 
-          <div v-if="props.movie.budget">
-            <h2 class="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Budget</h2>
-            <p class="text-gray-600 dark:text-gray-400">
-              ${{ new Intl.NumberFormat().format(props.movie.budget) }}
-            </p>
+          <div v-if="props.movie.budget" class="border-l-4 border-red-500 pl-4">
+            <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Budget</h3>
+            <p>{{ props.movie.budget.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) }}</p>
           </div>
 
-          <div v-if="props.movie.revenue">
-            <h2 class="text-2xl font-semibold mb-2 text-gray-800 dark:text-gray-200">Revenue</h2>
-            <p class="text-gray-600 dark:text-gray-400">
-              ${{ new Intl.NumberFormat().format(props.movie.revenue) }}
-            </p>
+          <div v-if="props.movie.revenue" class="border-l-4 border-red-500 pl-4">
+            <h3 class="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">Revenus</h3>
+            <p>{{ props.movie.revenue.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) }}</p>
           </div>
-        </div>
+        </section>
       </div>
     </div>
 
-    <!-- Loading State -->
-    <div v-else class="text-center py-6">
-      <p class="text-gray-600 dark:text-gray-400">Loading...</p>
+    <!-- État de chargement -->
+    <div v-else class="text-center py-16 text-gray-500 dark:text-gray-400 text-lg font-medium">
+      Chargement en cours...
     </div>
   </div>
 </template>
