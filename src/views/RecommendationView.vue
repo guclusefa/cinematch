@@ -8,7 +8,7 @@ const user = ref(getUser());
 </script>
 
 <template>
-  <WrapperElement>
+  <WrapperElement class="mt-4">
     <!-- Custom Section Header -->
     <div class="mb-10 text-center">
       <h2 class="text-3xl sm:text-4xl font-bold text-primary-dark drop-shadow flex items-center justify-center gap-2">
