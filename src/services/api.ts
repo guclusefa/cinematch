@@ -9,14 +9,14 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-  config => {
+  (config) => {
     const authStore = useAuthStore();
     if (authStore.token) {
       config.headers.Authorization = `Bearer ${authStore.token}`;
     }
     return config;
   },
-  error => {
+  (error) => {
     return Promise.reject(error);
   }
 );
@@ -24,8 +24,7 @@ api.interceptors.request.use(
 export const loginUser = async (userData) => {
   try {
     const response = await api.post('/login', userData);
-    localStorage.setItem('user', JSON.stringify(response.data
-    ));
+    localStorage.setItem('user', JSON.stringify(response.data));
 
     const { user } = response.data;
     const leUser = JSON.stringify(user[0]);
@@ -57,9 +56,33 @@ export const logoutUser = () => {
   localStorage.removeItem('user');
 };
 
+export const rateMovie = async (userId, movieId, rating) => {
+  try {
+    const response = await api.post('/ratings', {
+      userId,
+      movieId,
+      rating
+    });
+    return response.data;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
+export const getRecommendations = async (userId) => {
+  try {
+    const response = await api.get(`/recommendations/${userId}`);
+    return response.data.recommendations;
+  } catch (error) {
+    return Promise.reject(error);
+  }
+};
+
 export default {
   createUser,
   loginUser,
   getLoggedInUser,
-  logoutUser
+  logoutUser,
+  rateMovie,
+  getRecommendations
 };
