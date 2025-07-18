@@ -4,6 +4,7 @@ import AboutView from '@/views/AboutView.vue';
 import HomeView from '@/views/HomeView.vue';
 import SearchView from '@/views/SearchView.vue';
 import RecommendationView from '@/views/RecommendationView.vue';
+import RecommendationApiView from '@/views/RecommendationApiView.vue'
 
 import LoginView from '@/views/auth/LoginView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/recommendation',
       name: 'recommendation',
       component: RecommendationView
+    },
+    {
+      path: '/recommendation-api',
+      name: 'recommendation-api',
+      component: RecommendationApiView
     },
     // AUTH
     {

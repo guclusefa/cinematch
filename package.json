@@ -14,7 +14,7 @@
     "cypress:open": "cypress open"
   },
   "dependencies": {
-    "@headlessui/vue": "^1.7.14",
+    "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.0.18",
     "@infectoone/vue-ganttastic": "^2.3.2",
     "@vueuse/core": "^10.2.1",
