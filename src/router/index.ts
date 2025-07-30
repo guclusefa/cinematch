@@ -4,7 +4,7 @@ import AboutView from '@/views/AboutView.vue';
 import HomeView from '@/views/HomeView.vue';
 import SearchView from '@/views/SearchView.vue';
 import RecommendationView from '@/views/RecommendationView.vue';
-import RecommendationApiView from '@/views/RecommendationApiView.vue'
+import RecommendationIAView from '@/views/RecommendationIAView.vue';
 import WatchlistView from '@/views/WatchlistView.vue';
 import StatsView from '@/views/StatsView.vue';
 import FavoritesView from '@/views/FavoritesView.vue';
@@ -55,7 +55,7 @@ const router = createRouter({
     {
       path: '/recommendation-ia',
       name: 'recommendation-ia',
-      component: RecommendationApiView
+      component: RecommendationIAView
     },
     {
       path: '/watchlist',
