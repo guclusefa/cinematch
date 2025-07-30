@@ -5,12 +5,24 @@ import HomeView from '@/views/HomeView.vue';
 import SearchView from '@/views/SearchView.vue';
 import RecommendationView from '@/views/RecommendationView.vue';
 import RecommendationApiView from '@/views/RecommendationApiView.vue'
+import WatchlistView from '@/views/WatchlistView.vue';
+import StatsView from '@/views/StatsView.vue';
+import FavoritesView from '@/views/FavoritesView.vue';
 
 import LoginView from '@/views/auth/LoginView.vue';
 import RegisterView from '@/views/auth/RegisterView.vue';
 
 import MembersView from '@/views/members/MembersView.vue';
 import MemberView from '@/views/members/MemberView.vue';
+
+// Movie views
+import TrendingMoviesView from '@/views/movies/TrendingMoviesView.vue';
+import TopRatedMoviesView from '@/views/movies/TopRatedMoviesView.vue';
+import UpcomingMoviesView from '@/views/movies/UpcomingMoviesView.vue';
+import NowPlayingView from '@/views/movies/NowPlayingView.vue';
+import GenresView from '@/views/movies/GenresView.vue';
+import PersonView from '@/views/movies/PersonView.vue';
+import DiscoverView from '@/views/movies/DiscoverView.vue';
 
 import { useAuthStore } from '@/stores/auth';
 import { setDocumentTitle } from '@/utils/document';
@@ -41,9 +53,33 @@ const router = createRouter({
       component: RecommendationView
     },
     {
-      path: '/recommendation-api',
-      name: 'recommendation-api',
+      path: '/recommendation-ia',
+      name: 'recommendation-ia',
       component: RecommendationApiView
+    },
+    {
+      path: '/watchlist',
+      name: 'watchlist',
+      component: WatchlistView,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/stats',
+      name: 'stats',
+      component: StatsView,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/favorites',
+      name: 'favorites',
+      component: FavoritesView,
+      meta: {
+        requiresAuth: true
+      }
     },
     // AUTH
     {
@@ -80,6 +116,41 @@ const router = createRouter({
       }
     },
     // MOVIES
+    {
+      path: '/movies/discover',
+      name: 'discover-movies',
+      component: DiscoverView
+    },
+    {
+      path: '/movies/trending',
+      name: 'trending-movies',
+      component: TrendingMoviesView
+    },
+    {
+      path: '/movies/top-rated',
+      name: 'top-rated-movies',
+      component: TopRatedMoviesView
+    },
+    {
+      path: '/movies/upcoming',
+      name: 'upcoming-movies',
+      component: UpcomingMoviesView
+    },
+    {
+      path: '/movies/now-playing',
+      name: 'now-playing-movies',
+      component: NowPlayingView
+    },
+    {
+      path: '/movies/genres',
+      name: 'movie-genres',
+      component: GenresView
+    },
+    {
+      path: '/person/:id',
+      name: 'person',
+      component: PersonView
+    },
     {
       path: '/movies/:id',
       name: 'movie',

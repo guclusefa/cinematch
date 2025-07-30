@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import WrapperElement from '@/components/elements/WrapperElement.vue';
 import MoviesListPopular from '@/components/movies/MovieListPopular.vue';
+import RecentlyViewedMovies from '@/components/movies/RecentlyViewedMovies.vue';
 </script>
 
 <template>
@@ -19,7 +20,10 @@ import MoviesListPopular from '@/components/movies/MovieListPopular.vue';
 
   <!-- Movie Section -->
   <WrapperElement>
-    <div class="py-12">
+    <div class="py-12 space-y-12">
+      <!-- Recently Viewed Section -->
+      <RecentlyViewedMovies />
+
       <!-- Custom Section Header -->
       <div class="text-center mb-10">
         <h2 class="text-3xl md:text-4xl font-bold text-secondary-darkest dark:text-white flex items-center justify-center gap-3">

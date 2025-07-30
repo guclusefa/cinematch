@@ -8,20 +8,22 @@ const error = ref('');
 const messages = ref<{ from: 'user' | 'bot', content: string | any[] }[]>([]);
 
 // Configuration des APIs IA
+const XAI_API = 'https://api.x.ai/v1/chat/completions';
 const OPENAI_API = 'https://api.openai.com/v1/chat/completions';
 const HUGGINGFACE_API = 'https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1';
 const COHERE_API = 'https://api.cohere.ai/v1/generate';
 
 // Clés API (remplacez par vos vraies clés)
+const XAI_KEY = 'xai-oiXNGh7D1U2jND47jO8tJWh01821odE55rGIh6LQ8Dnonq09abr0318mRqRlDs9IAKCiFMXsCP75bXeL';
 const OPENAI_KEY = ''; // Ajoutez votre clé OpenAI ici
-const HF_KEY = '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';
-const COHERE_KEY = 'LjZ9j5XbqA3WWynLRCPwuAgugiDkQrFQtnU7bDMf'; // Ajoutez votre clé Cohere ici
+const HF_KEY = import.meta.env.VITE_HUGGINGFACE_API_KEY;
+const COHERE_KEY = ''; // Ajoutez votre clé Cohere ici
 
 // Conversation context pour maintenir le contexte
 const conversationHistory = ref<{ role: string; content: string }[]>([
   {
     role: 'system',
-    content: 'Tu es un expert passionné de cinéma qui aide les gens à découvrir des films. Tu connais tous les genres, réalisateurs, acteurs et tu peux faire des recommandations personnalisées. Réponds de manière conversationnelle et enthousiaste. Tu peux discuter de films, donner des avis, expliquer pourquoi un film pourrait plaire, et poser des questions pour mieux comprendre les goûts de la personne.'
+    content: 'Tu es un expert passionné de cinéma et un critique de films expérimenté. Tu connais tous les genres, réalisateurs, acteurs, et tu peux faire des recommandations personnalisées très précises. Tu peux discuter de films récents et classiques, expliquer les techniques cinématographiques, analyser les performances d\'acteurs, et donner des avis détaillés. Réponds de manière conversationnelle, enthousiaste et informative. Tu peux poser des questions pour mieux comprendre les goûts de la personne et donner des recommandations ultra-personnalisées.'
   }
 ]);
 
@@ -37,7 +39,7 @@ async function getRecommendation() {
 
   try {
     // Essayer plusieurs APIs dans l'ordre de préférence
-    const success = await tryOpenAI() || await tryHuggingFace() || await tryLocalOllama() || await tryGroqAPI() || await tryFreeAPI();
+    const success = await tryXAI() || await tryOpenAI() || await tryHuggingFace() || await tryLocalOllama() || await tryGroqAPI() || await tryFreeAPI();
     
     if (!success) {
       const fallbackResponse = "Désolé, j'ai des difficultés techniques en ce moment. Mais je peux quand même vous dire que je suis passionné de cinéma ! Pouvez-vous me dire quel genre de films vous aimez ? Action, drame, comédie, science-fiction ?";
@@ -54,6 +56,50 @@ async function getRecommendation() {
     loading.value = false;
     prompt.value = '';
   }
+}
+
+async function tryXAI(): Promise<boolean> {
+  if (!XAI_KEY) return false;
+  
+  try {
+    console.log('Trying X.AI API with Grok...');
+    const response = await fetch(XAI_API, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${XAI_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'grok-4-latest',
+        messages: conversationHistory.value,
+        max_tokens: 300,
+        temperature: 0.8,
+        stream: false
+      }),
+    });
+
+    console.log('X.AI response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('X.AI API error:', errorText);
+      throw new Error('X.AI API failed');
+    }
+
+    const data = await response.json();
+    console.log('X.AI response data:', data);
+    
+    if (data.choices?.[0]?.message?.content) {
+      const botResponse = data.choices[0].message.content.trim();
+      messages.value.push({ from: 'bot', content: botResponse });
+      conversationHistory.value.push({ role: 'assistant', content: botResponse });
+      console.log('X.AI success!');
+      return true;
+    }
+  } catch (e) {
+    console.log('X.AI API failed:', e);
+  }
+  return false;
 }
 
 async function tryOpenAI(): Promise<boolean> {
@@ -300,7 +346,7 @@ function clearChat() {
   conversationHistory.value = [
     {
       role: 'system',
-      content: 'Tu es un expert passionné de cinéma qui aide les gens à découvrir des films. Tu connais tous les genres, réalisateurs, acteurs et tu peux faire des recommandations personnalisées. Réponds de manière conversationnelle et enthousiaste. Tu peux discuter de films, donner des avis, expliquer pourquoi un film pourrait plaire, et poser des questions pour mieux comprendre les goûts de la personne.'
+      content: 'Tu es un expert passionné de cinéma et un critique de films expérimenté. Tu connais tous les genres, réalisateurs, acteurs, et tu peux faire des recommandations personnalisées très précises. Tu peux discuter de films récents et classiques, expliquer les techniques cinématographiques, analyser les performances d\'acteurs, et donner des avis détaillés. Réponds de manière conversationnelle, enthousiaste et informative. Tu peux poser des questions pour mieux comprendre les goûts de la personne et donner des recommandations ultra-personnalisées.'
     }
   ];
 }
@@ -309,12 +355,12 @@ function clearChat() {
 <template>
   <WrapperElement>
     <div class="max-w-3xl mx-auto py-10 px-4">
-      <h1 class="text-3xl font-bold text-center mb-6">🎬 Chatbot IA – Recommandation de Films</h1>
+      <h1 class="text-3xl font-bold text-center mb-6">✨ Recommandation IA – Expert Cinéma</h1>
 
       <div class="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-300 dark:border-gray-700 h-[60vh] overflow-y-auto space-y-4 mb-4">
         <div v-if="messages.length === 0" class="text-center text-gray-500 mt-8">
-          <p class="mb-2">🎬 Bienvenue ! Je suis votre assistant cinéma.</p>
-          <p class="text-sm">Demandez-moi des recommandations de films, parlons de cinéma !</p>
+          <p class="mb-2">✨ Bonjour ! Je suis votre expert cinéma personnel.</p>
+          <p class="text-sm">Posez-moi des questions sur des films, demandez des recommandations, ou discutons de cinéma !</p>
         </div>
         
         <div v-for="(msg, index) in messages" :key="index" :class="msg.from === 'user' ? 'text-right' : 'text-left'">
@@ -355,7 +401,7 @@ function clearChat() {
           v-model="prompt"
           @keydown.enter.prevent="getRecommendation"
           class="flex-1 border border-gray-300 dark:border-gray-700 px-4 py-2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          placeholder="Ex: Je cherche un film d'action, des comédies françaises, films de science-fiction..."
+          placeholder="Ex: Recommande-moi un film comme Inception, quels sont les meilleurs films de Christopher Nolan..."
         />
         <button
           @click="getRecommendation"
